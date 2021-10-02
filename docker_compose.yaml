@@ -1,0 +1,224 @@
+#一键docker部署clash 附config.yaml例子 （dashboard ui自备或者 docker pull p3terx/yacd 缝合进来
+
+
+version: '3'
+services:
+  clash:
+    image: dreamacro/clash-premium
+    container_name: clash
+    volumes:
+      - ./config.yaml:/root/.config/clash/config.yaml
+      - ./ui:/ui
+    restart: unless-stopped
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.3
+    depends_on:
+        - subconverter
+
+  subconverter: #default port 25500
+    image: tindy2013/subconverter:latest
+    container_name: subconverter
+    restart: always
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.4    
+
+
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 172.30.0.0/24
+
+
+
+# port: 7890
+# socks-port: 7891
+# redir-port: 7892
+# mixed-port: 7893
+# tproxy-port: 7895
+# allow-lan: true
+# mode: rule
+# log-level: silent
+# external-controller: 0.0.0.0:9090
+# external-ui: /ui
+# secret: '123456'
+# bind-address: "*"
+# dns:
+#   enable: true
+#   ipv6: false
+#   enhanced-mode: redir-host
+#   listen: 0.0.0.0:53
+#   nameserver:
+#   - 223.5.5.5
+#   - 223.6.6.6
+#   - 114.114.114.114
+#   - 192.168.1.110
+#   - 119.29.29.29
+#   fallback:
+#   - https://cloudflare-dns.com/dns-query
+#   - https://dns.google/dns-query
+#   - https://1.1.1.1/dns-query
+#   - tls://8.8.8.8:853
+#   default-nameserver:
+#   - 114.114.114.114
+#   - 119.29.29.29
+#   - 223.5.5.5
+#   - 223.6.6.6
+#   - 192.168.1.110
+
+# ipv6: false
+# profile:
+#   store-selected: true
+
+
+# tun:
+#   enable: true
+#   stack: system
+#   dns-hijack:
+#   - tcp://8.8.8.8:53
+#   - tcp://8.8.4.4:53
+
+
+
+# proxy-providers:
+#   ppy:
+#     type: http
+#     url: "http://172.30.0.4:25500/sub?target=clash&url=<ulrencoder处理后的订阅地址>&list=true&emoji=false&udp=true"
+#     interval: 3600
+#     path: ./ppy.yaml
+#     health-check:
+#       enable: true
+#       interval: 600
+#       # lazy: true
+#       url: http://www.gstatic.com/generate_204
+#   ss:
+#     type: http
+#     url: "http://172.30.0.4:25500/sub?target=clash&url=<ulrencoder处理后的订阅地址>&list=true&emoji=false&udp=true"
+#     interval: 3600
+#     path: ./ss.yaml
+#     health-check:
+#       enable: true
+#       interval: 600
+#       # lazy: true
+#       url: http://www.gstatic.com/generate_204
+
+# proxy-groups:
+#   - name: PROXY
+#     type: select
+#     proxies:
+#       - DIRECT
+#     use:
+#       - ppy
+#       - ss
+
+# rules:
+#   - DOMAIN,clash.razord.top,DIRECT
+#   - DOMAIN,yacd.haishan.me,DIRECT
+#   - RULE-SET,private,DIRECT
+#   - RULE-SET,reject,REJECT
+#   - RULE-SET,icloud,DIRECT
+#   - RULE-SET,apple,DIRECT
+#   - RULE-SET,google,DIRECT
+#   - RULE-SET,proxy,PROXY
+#   - RULE-SET,direct,DIRECT
+#   - RULE-SET,telegramcidr,PROXY
+#   - GEOIP,,DIRECT
+#   - GEOIP,CN,DIRECT
+#   - MATCH,PROXY
+
+# rule-providers:
+#   reject:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+#     path: ./ruleset/reject.yaml
+#     interval: 86400
+
+#   icloud:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt"
+#     path: ./ruleset/icloud.yaml
+#     interval: 86400
+
+#   apple:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt"
+#     path: ./ruleset/apple.yaml
+#     interval: 86400
+
+#   google:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt"
+#     path: ./ruleset/google.yaml
+#     interval: 86400
+
+#   proxy:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
+#     path: ./ruleset/proxy.yaml
+#     interval: 86400
+
+#   direct:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+#     path: ./ruleset/direct.yaml
+#     interval: 86400
+
+#   private:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt"
+#     path: ./ruleset/private.yaml
+#     interval: 86400
+
+#   gfw:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"
+#     path: ./ruleset/gfw.yaml
+#     interval: 86400
+
+#   greatfire:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/greatfire.txt"
+#     path: ./ruleset/greatfire.yaml
+#     interval: 86400
+
+#   tld-not-cn:
+#     type: http
+#     behavior: domain
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt"
+#     path: ./ruleset/tld-not-cn.yaml
+#     interval: 86400
+
+#   telegramcidr:
+#     type: http
+#     behavior: ipcidr
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt"
+#     path: ./ruleset/telegramcidr.yaml
+#     interval: 86400
+
+#   cncidr:
+#     type: http
+#     behavior: ipcidr
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+#     path: ./ruleset/cncidr.yaml
+#     interval: 86400
+
+#   lancidr:
+#     type: http
+#     behavior: ipcidr
+#     url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"
+#     path: ./ruleset/lancidr.yaml
+#     interval: 86400
